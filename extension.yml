@@ -22,6 +22,7 @@ hooks:
   after_tasks:
     command: "speckit.task-consolidation.consolidate"
     optional: false
+    priority: 1
     description: "Save consolidated tasks before downstream hooks and the completion report."
 
 tags:
