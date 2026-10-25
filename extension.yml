@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "task-consolidation"
   name: "Task Consolidation"
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Consolidate task boundaries into cohesive, manageable implementation outcomes."
   author: "Adam Bogdan Boczek"
   repository: "https://github.com/grafvonb/spec-kit-extension-task-consolidation"

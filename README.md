@@ -41,9 +41,20 @@ For an existing or already-started list, invoke
 Only `tasks.md` changes. Required work, tests and test-first ordering, story/phase
 constraints, dependencies, useful parallelism, and completed work are preserved.
 Surviving IDs on started lists remain stable. Consolidation does not execute tasks
-or their tests. The report stays short, for example:
+or their tests. The report uses a consistent format of at most 10 lines, and the hook
+asks the parent to preserve it in the final response. Example:
 
-> **Consolidated 14 → 10 tasks.** Combined related model edits and overlapping validation work.
+```markdown
+**Consolidated 8 → 7 tasks** · [tasks.md](/project/specs/001-feature/tasks.md)
+
+- **Merged:** T003 + T004 → T003: service operation and thin facade; `Facade.execute` only delegates.
+- **Kept separate:** T005 lifecycle handling: `Session.close` needs its own cleanup validation.
+- **Checked:** requirement ownership, references, dependencies and IDs; no existing progress to preserve.
+- **Limitations:** None identified; application tests not run.
+```
+
+For no change, the summary explains the strongest rejected merge. Consistency-only
+repairs and blocked runs are reported explicitly.
 
 ## Reinstall or remove
 

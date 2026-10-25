@@ -63,10 +63,29 @@ Aim for fewer manageable implementation tasks without forcing a target count. Pr
    for important merges and retained boundaries. Leave it unchanged when no justified
    simplification or consistency repair is needed.
 
-Report actual counts, such as **Consolidated 14 → 10 tasks**, the main merges and the
-most consequential retained boundary. For no change, explain the strongest rejected merge.
-Briefly identify code inspected, coverage/reference checks and unresolved limitations.
-Do not equate fewer tasks with reduced scope or claim implementation tests passed.
+Return this compact Markdown summary, at most 10 source lines including blank lines.
+Keep the labels and order below; use actual counts and only checks performed. Summarize
+the main merges and the most consequential retained boundary, citing inspected code
+paths or symbols inline. Do not equate fewer tasks with reduced scope or claim
+implementation tests passed.
+
+```markdown
+**Consolidated {before} → {after} tasks** · [tasks.md]({absolute_path})
+
+- **Merged:** {original IDs} → {resulting ID}: {outcome and short reason}.
+- **Kept separate:** {tasks}: {concrete reason}.
+- **Checked:** {coverage, references, dependencies, IDs and progress checks actually completed}.
+- **Limitations:** {unresolved uncertainty, or “None identified”}; application tests not run.
+```
+
+For no change, use **No change: {count} tasks** and replace “Merged” with “Rejected
+merge”, explaining the strongest candidate and the code-grounded reason for rejecting it.
+For consistency repairs without a count change, use **Repaired: {count} tasks** and
+replace “Merged” with “Repaired”. If no boundary remains, say “None” under “Kept separate”.
+For failure, return a summary within the same limit starting with **Blocked**, naming
+the cause and whether `tasks.md` changed; do not invent counts or completed checks.
 
 As a hook, finish saving before returning to the parent for remaining hooks and completion.
+Return the summary with an instruction to include it unchanged in the parent's final
+response after remaining hooks, rather than reducing it to counts alone.
 Do not regenerate tasks, dispatch hooks, implement work, commit or publish. Report failures explicitly.
