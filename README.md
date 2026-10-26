@@ -38,14 +38,16 @@ The extension does not wrap, replace, or recursively invoke task generation.
 For an existing or already-started list, invoke
 `/speckit.task-consolidation.consolidate`, or
 `$speckit-task-consolidation-consolidate` in Codex skills mode.
-Only `tasks.md` changes. Required work, tests and test-first ordering, story/phase
-constraints, dependencies, useful parallelism, and completed work are preserved.
+Consolidation updates `tasks.md` directly and saves review findings separately in
+`consolidation-review.md`. Only these two files may change. Required work, tests and
+test-first ordering, story/phase constraints, dependencies, useful parallelism, and
+completed work are preserved.
 Surviving IDs on started lists remain stable. Consolidation does not execute tasks
 or their tests. The report uses a consistent format of at most 10 lines, and the hook
 asks the parent to preserve it in the final response. Example:
 
 ```markdown
-**Consolidated 8 → 7 tasks** · [tasks.md](/project/specs/001-feature/tasks.md)
+**Consolidated 8 → 7 tasks** · [tasks.md](/project/specs/001-feature/tasks.md) · [Review](/project/specs/001-feature/consolidation-review.md)
 
 - **Merged:** T003 + T004 → T003: service operation and thin facade; `Facade.execute` only delegates.
 - **Kept separate:** T005 lifecycle handling: `Session.close` needs its own cleanup validation.
@@ -53,8 +55,15 @@ asks the parent to preserve it in the final response. Example:
 - **Limitations:** None identified; application tests not run.
 ```
 
-For no change, the summary explains the strongest rejected merge. Consistency-only
-repairs and blocked runs are reported explicitly.
+For no task changes, the summary explains the strongest rejected merge; the review
+file is still created or updated. It holds merge rationale, code evidence, ID mappings
+and checks, while `tasks.md` retains execution instructions. Repeat runs update the
+current assessment while preserving relevant historical evidence. Any standalone
+consolidation-review section already in `tasks.md` is saved in the review file and
+removed from `tasks.md`, with task definitions and progress preserved; this relocation
+is reported separately. Consistency-only repairs and partial-save failures are
+reported explicitly. All required saves finish before returning to downstream hooks;
+an unchanged `tasks.md` is not rewritten merely to accompany a review update.
 
 ## Reinstall or remove
 
