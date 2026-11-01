@@ -1,9 +1,10 @@
 # Task Consolidation
 
-Reduce the number of tasks and later implementation iterations by merging work
-that reasonably belongs together and removing duplication. Aim for fewer manageable
-tasks without losing required work or forcing a particular count. Split only clearly
-oversized tasks; leave already reasonable lists alone.
+Remove unnecessary task boundaries without losing requirements, tests or progress.
+Assume boundaries are removable until concrete evidence justifies keeping them.
+Seek adjacent and nonadjacent merges around shared behavior, callers, prerequisites,
+tests and documentation. Judge implementation work after reuse, not description
+length or file counts; do not force a target task count.
 
 Requires an initialized Spec Kit project with an agent integration, standard
 scripts, and existing `tasks.md`, `spec.md`, and `plan.md`. Spec Kit **1.2.1** is
@@ -39,31 +40,45 @@ For an existing or already-started list, invoke
 `/speckit.task-consolidation.consolidate`, or
 `$speckit-task-consolidation-consolidate` in Codex skills mode.
 Consolidation updates `tasks.md` directly and saves review findings separately in
-`consolidation-review.md`. Only these two files may change. Required work, tests and
-test-first ordering, story/phase constraints, dependencies, useful parallelism, and
-completed work are preserved.
-Surviving IDs on started lists remain stable. Consolidation does not execute tasks
-or their tests. The report uses a consistent format of at most 10 lines, and the hook
-asks the parent to preserve it in the final response. Example:
+`consolidation-review.md`. Only these two files may change. Required work, test
+coverage and ordering, architectural ownership, explicit repository/story rules,
+completed status and partial progress are preserved. Referenced IDs are retained
+or explicitly mapped; dependencies and parallel markers are updated.
+
+Retained boundaries require evidence that the combined implementation and validation
+are impractical, an explicit rule requires separate execution or delivery, or a
+merge would corrupt progress. A new algorithm or lifecycle alone is insufficient.
+Before rejecting the strongest candidate, the agent drafts its combined outcome
+and validation. After merging, it reviews the resulting list again.
+
+Every invocation prints `TASK CONSOLIDATION STARTED`, then MUST print a fixed
+`TASK CONSOLIDATION RESULT` block in the final console/chat response, including
+no-merge, blocked and failed runs. Saving a review file or announcing a hook is
+not a substitute. The report always includes these labels in this order:
 
 ```markdown
-**Consolidated 8 → 7 tasks** · [tasks.md](/project/specs/001-feature/tasks.md) · [Review](/project/specs/001-feature/consolidation-review.md)
-
-- **Merged:** T003 + T004 → T003: service operation and thin facade; `Facade.execute` only delegates.
-- **Kept separate:** T005 lifecycle handling: `Session.close` needs its own cleanup validation.
-- **Checked:** requirement ownership, references, dependencies and IDs; no existing progress to preserve.
-- **Limitations:** None identified; application tests not run.
+**TASK CONSOLIDATION RESULT**
+- **Status:** COMPLETED
+- **Tasks:** Reviewed 8 → 7 tasks.
+- **Merged:** T003 + T004 → T003: service operation and its delegating facade.
+- **Retained / rejected:** T002 is completed; absorbing unfinished T003 would corrupt progress.
+- **Evidence:** src/facade.py: Facade.execute only delegates; no separate behavior to implement.
+- **Files:** /project/specs/001-feature/tasks.md: updated; /project/specs/001-feature/consolidation-review.md: saved
+- **Checks:** requirement ownership, dependencies, references, IDs, progress, whitespace and saved-file readback; application tests not run.
+- **Limitations:** None identified
 ```
 
-For no task changes, the summary explains the strongest rejected merge; the review
-file is still created or updated. It holds merge rationale, code evidence, ID mappings
-and checks, while `tasks.md` retains execution instructions. Repeat runs update the
-current assessment while preserving relevant historical evidence. Any standalone
-consolidation-review section already in `tasks.md` is saved in the review file and
-removed from `tasks.md`, with task definitions and progress preserved; this relocation
-is reported separately. Consistency-only repairs and partial-save failures are
-reported explicitly. All required saves finish before returning to downstream hooks;
-an unchanged `tasks.md` is not rewritten merely to accompany a review update.
+This is an illustrative report, not evidence of a real run. Status is `COMPLETED`,
+`NO MERGES`, `BLOCKED` or `FAILED`; unavailable counts and paths are `unknown`.
+Successful reviews require reading back both final files to verify counts and results.
+Failures identify partial writes. If nothing merges, the report shows the strongest
+combined outcome considered and the specific evidence blocking it. Reference
+repairs alone are not consolidation.
+
+The review records current findings and preserves still-needed ID mappings.
+Consolidation does not implement tasks or run application tests. Required writes
+finish before returning to downstream hooks. The hook requires the parent to include
+the populated result block unchanged in its final response after remaining hooks.
 
 ## Reinstall or remove
 
@@ -83,7 +98,8 @@ specify extension remove task-consolidation
 
 Spec Kit 1.2.1 installation, reinstall, removal and migration checks passed.
 Earlier same-session trials covered execution, ordering, preservation and stability;
-they predate this reduction-focused command. Its behavior has not been re-evaluated.
+they predate the v0.5.0 merge-first instructions. These instructions have not yet
+been evaluated in an independent consolidation run.
 Independent agent sessions and PowerShell/Python execution remain untested.
 Registration success alone does not prove behavioral effectiveness.
 

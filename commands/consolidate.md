@@ -6,127 +6,113 @@ scripts:
   py: ../../scripts/python/check_prerequisites.py --json --paths-only
 ---
 
-Aim for fewer manageable implementation tasks without forcing a target count. Preserve architectural boundaries in code; they need not become task boundaries.
+# Task Consolidation
 
-Apply justified consolidations and consistency repairs directly to `tasks.md`.
-Keep task definitions, dependencies, acceptance criteria and implementation guidance
-there. Put consolidation findings, merge rationale, rejected-merge explanations,
-ID mappings and review history in `FEATURE_DIR/consolidation-review.md`, not `tasks.md`.
-Keep the compact run summary in the console/chat output.
+Remove unnecessary task boundaries without losing requirements, tests or progress.
+Judge implementation work, not description length. Consolidation is the work;
+reference repairs alone do not count.
 
-1. Consider `$ARGUMENTS`. Read `tasks.md`, `spec.md`, `plan.md`, project instructions,
-   the constitution, relevant design artifacts and progress records. Reuse `FEATURE_DIR`
-   from the current tasks run; otherwise run `{SCRIPT}` from the project root.
-   If resolution fails or required inputs are ambiguous, missing, empty or unreadable,
-   report it and stop unchanged.
+Immediately print `TASK CONSOLIDATION STARTED` in the visible console/chat output.
+This marker announces invocation, not completion. Every exit MUST include the
+mandatory result block below, including blocked and failed runs.
 
-2. Ground the review in code. Inspect relevant implementations, interfaces, callers,
-   reusable helpers and nearby tests. Identify each task’s outcome, dependencies,
-   validation and acceptance obligations. Distinguish substantial new behavior from
-   thin mapping, delegation or wiring; find shared contracts, fixtures and repeated edits.
-   Do not treat the existing decomposition or earlier review as proof of necessity.
-   If relevant code is unavailable, disclose the limitation and preserve uncertain work.
+Consider `$ARGUMENTS`. Reuse `FEATURE_DIR` from the current tasks run; otherwise
+run `{SCRIPT}` from the project root. Resolve `tasks.md`, `spec.md` and `plan.md`
+there. If the feature or required inputs cannot be resolved, report the blocker
+and stop unchanged.
 
-3. Evaluate every adjacent boundary and nonadjacent tasks sharing underlying behavior.
-   Explicitly consider merging:
-   - A service operation with its thin facade or mapping.
-   - Input validation with frozen-request and preview/report logic.
-   - Interface changes with implementations and required test doubles.
-   - Single-item and collection workflows that would otherwise duplicate work.
-   - Implementation with its fixtures, tests, formatting and documentation.
-   - Repeated setup, guards, temporary enablement or integration repairs.
+## Review
 
-   For each plausible merge, identify the handoff or repeated work removed and whether
-   the combined implementation **and validation** fit one focused iteration. Cite relevant
-   code paths or symbols. Separate files, packages, layers, independent testability or
-   hypothetical parallelism alone do not justify separate tasks.
+1. Read tasks, spec, plan, repository rules and relevant code. Distinguish
+   genuinely new behavior from adaptation, wiring, mappings and reused mechanisms.
+   Do not estimate existing mechanisms as new implementation.
 
-4. Merge around cohesive, verifiable outcomes. Retain boundaries for concrete complexity,
-   actual execution constraints or useful independent delivery—not vague “different concerns”
-   or file counts. Recheck the result for remaining thin tasks and oversized combinations,
-   especially protocol, concurrency, lifecycle and diagnostic work.
-   Do not add scope or force restructuring. A no-change result requires explaining the
-   strongest plausible merge and the code-grounded reason for rejecting it.
+2. Actively seek adjacent and nonadjacent merges:
+   - shared policy, selector, planner, executor or confirmation flow;
+   - the same change across commands or resource types;
+   - services with facades, callers, interfaces and test doubles;
+   - prerequisites with their first useful consumer;
+   - implementation with its validation, fixtures, tests and documentation.
 
-5. Preserve all requirements, invariants, compatibility, meaningful tests, required
-   test-first ordering, story/phase constraints and real dependencies. Reuse fixtures
-   without weakening boundary checks: unit or renderer tests cannot replace required
-   command, terminal, logging or exit-path tests. Avoid duplicate implementations and
-   unnecessary test cross-products.
+3. Assume each boundary is removable until evidence demonstrates otherwise.
+   Different files, packages, layers, commands, payloads, test cases, independent
+   testability or hypothetical parallelism do not justify separate tasks.
 
-   Keep completed tasks, IDs, evidence and partial progress intact; never merge unfinished
-   work into a checked task. Retain work whose necessity is uncertain.
+4. Keep a boundary only when:
+   - the combined implementation AND validation are impractical as one work unit,
+     after accounting for reuse and shared setup; identify the distinct new
+     behavior and validation obligations that make it too large;
+   - an explicit repository/story rule requires separate execution or delivery;
+   - merging would corrupt completed or partial progress.
 
-6. Repair IDs, references, dependencies, story ownership, parallel examples and counts.
-   Check external references before renumbering. Renumber fresh drafts; preserve surviving
-   IDs on started or externally referenced lists and allocate new IDs above the original
-   maximum. Record superseded-ID mappings in `consolidation-review.md` where needed.
-   Keep `[P]` only where prerequisites and file conflicts permit it.
+   A new algorithm or lifecycle is not an automatic exemption. Generated headings
+   and existing task divisions are not proof of a constraint. Cite the relevant
+   code, design requirement, rule or progress evidence.
 
-   Verify every original obligation still has an owner, dependencies and references are
-   coherent, and progress is preserved. Check links and whitespace; do not run application
-   tests merely to revise planning documents. Save the consolidated tasks and consistency
-   repairs to `tasks.md`. Do not append consolidation findings or run summaries.
-   Leave `tasks.md` unchanged when no justified simplification or consistency repair
-   is needed, except for the review relocation below.
+5. Before rejecting the strongest merge candidate, draft its combined outcome
+   and required validation. Explain why that concrete work unit cannot merge.
+   Challenge every retained boundary: what repeated work or handoff disappears
+   if it is removed?
 
-   As the sole additional cleanup, move any standalone consolidation-review section
-   already in `tasks.md` to `consolidation-review.md`. Save that historical content in
-   the review file before removing it from `tasks.md`; preserve task definitions,
-   acceptance criteria, implementation guidance and progress. Report this separately
-   as review relocation, not as task consolidation.
+## Revise
 
-7. Create or update `FEATURE_DIR/consolidation-review.md` with the detailed review,
-   including when no task changes are justified. Include:
-   - Review date, feature context and a link to `tasks.md`.
-   - Actual before/after task counts and the run outcome.
-   - A compact account of evaluated adjacent boundaries and shared behavior across
-     nonadjacent tasks.
-   - Merges made, retained boundaries and rejected merges, with inspected code evidence.
-   - Superseded-ID mappings when applicable.
-   - Coverage, dependency, reference, format and progress checks actually performed.
-   - Limitations and checks not performed.
+Apply justified merges directly. Give each checkbox one cohesive, verifiable
+outcome; retain command-specific requirements beneath it. Do not merely concatenate
+unrelated work or force a target count.
 
-   For no task changes, record the strongest plausible merge and why it was rejected.
-   Maintain a current assessment rather than appending a run log: replace stale findings,
-   preserve still-relevant evidence and necessary historical ID mappings, and distinguish
-   them from the current run. Do not present relocated historical findings as new work.
+Preserve every acceptance criterion, required test level, error/terminal check,
+architectural ownership and test-first ordering. Express internal sequencing
+within merged tasks. Keep interfaces, implementations and test doubles together.
 
-   Save only `tasks.md` and `consolidation-review.md`. Do not modify specifications,
-   plans, other progress records, skill sources or implementation files. If saving
-   either artifact fails, report the failure and identify which files, if any, changed.
-   Do not report success until all required writes succeed. Do not rewrite an unchanged
-   `tasks.md` merely to accompany a review update.
+Preserve completed status, partial progress and evidence. Never absorb unfinished
+work into a checked task. Uncertain obligations must survive; their separate
+checkboxes need not.
 
-Always report the run visibly in console/chat. Saving the review file alone is not
-a completion report. Do not write this run summary into `tasks.md`.
+Update IDs, dependencies, coverage mappings, parallel markers and counts.
+Preserve referenced IDs or record explicit mappings. Check intervening dependencies
+for nonadjacent merges: the resulting graph must remain acyclic and executable.
+Verify every original obligation still has an owner.
 
-Return this compact Markdown summary, at most 10 source lines including blank lines.
-Keep the labels and order below; use actual counts and only checks performed. Summarize
-the main merges and the most consequential retained boundary, citing inspected code
-paths or symbols inline. Do not equate fewer tasks with reduced scope or claim
-implementation tests passed.
+Review the resulting list again for removable boundaries exposed by the merges.
+
+Write only `FEATURE_DIR/tasks.md` and `FEATURE_DIR/consolidation-review.md`.
+Keep execution requirements in tasks and review rationale in the review. Record
+concise evidence for merges, retained boundaries and the strongest rejected merge,
+if any. Replace stale findings while preserving still-needed ID mappings.
+
+Check references, links, whitespace and progress. Do not run application tests
+for planning-only changes. Report write failures; never claim unsaved work succeeded.
+
+## Mandatory Console Report
+
+The run is incomplete without a visible result block. ALWAYS print the following
+Markdown template in the final console/chat response without waiting to be asked.
+Keep every label and its order. A review file, tool output, hook announcement or
+bare task count is not a substitute. Never put this block only in a file.
 
 ```markdown
-**Consolidated {before} → {after} tasks** · [tasks.md]({absolute_tasks_path}) · [Review]({absolute_review_path})
-
-- **Merged:** {original IDs} → {resulting ID}: {outcome and short reason}.
-- **Kept separate:** {tasks}: {concrete reason}.
-- **Checked:** {coverage, references, dependencies, IDs and progress checks actually completed}.
-- **Limitations:** {unresolved uncertainty, or “None identified”}; application tests not run.
+**TASK CONSOLIDATION RESULT**
+- **Status:** {COMPLETED | NO MERGES | BLOCKED | FAILED}
+- **Tasks:** Reviewed {N} → {M} tasks.
+- **Merged:** {original IDs → resulting ID: outcome and reason; or None}
+- **Retained / rejected:** {main boundary; strongest rejected combined outcome if no merges; specific evidence; or None}
+- **Evidence:** {inspected code paths/symbols and what they demonstrate; or unavailable and why}
+- **Files:** {absolute tasks.md path: updated/unchanged/not written; absolute consolidation-review.md path: saved/not written}
+- **Checks:** {checks actually performed}; application tests not run.
+- **Limitations:** {blocker, failure, unperformed checks or None identified}
 ```
 
-For no task changes, use **No task changes: {count} tasks** and replace “Merged” with “Rejected
-merge”, explaining the strongest candidate and the code-grounded reason for rejecting it.
-For consistency repairs without a count change, use **Repaired: {count} tasks** and
-replace “Merged” with “Repaired”. If no boundary remains, say “None” under “Kept separate”.
-Mention review relocation separately from task changes, including on runs with no task
-changes. For failure, return a summary within the same limit starting with **Blocked**,
-naming the cause and whether either artifact changed. Do not invent counts, completed
-checks or links to files that were not saved.
+Use actual counts and evidence; write `unknown` for unavailable counts or paths.
+Use NO MERGES for completed reviews without merges, including reference-only repairs.
+If nothing merged, give the strongest combined outcome considered and the specific
+evidence blocking it; generic complexity claims are insufficient. If review could
+not reach that decision, report BLOCKED or FAILED instead.
 
-As a hook, finish all required saves to `tasks.md` and `consolidation-review.md` before
-returning to the parent for remaining hooks and completion.
-Return the summary with an instruction to include it unchanged in the parent's final
-response after remaining hooks, rather than reducing it to counts alone.
-Do not regenerate tasks, dispatch hooks, implement work, commit or publish. Report failures explicitly.
+Before reporting COMPLETED or NO MERGES, read back the final tasks and review files
+and verify counts and saved results. On failure, identify partial writes explicitly.
+Never present a start marker, planned check or stale review as completed execution.
+
+As a hook, finish required writes and return this exact populated block with the
+instruction: “You MUST include this TASK CONSOLIDATION RESULT block unchanged in
+your final response after remaining hooks. Do not omit it or replace it with counts.”
+Do not regenerate tasks, dispatch hooks, implement work, commit or publish.
