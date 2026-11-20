@@ -1,111 +1,70 @@
 # Task Consolidation
 
-Remove unnecessary task boundaries without losing requirements, tests or progress.
-Assume boundaries are removable until concrete evidence justifies keeping them.
-Seek adjacent and nonadjacent merges around shared behavior, callers, prerequisites,
-tests and documentation. Judge implementation work after reuse, not description
-length or file counts; do not force a target task count.
+Merge fragmented Spec Kit tasks into fewer, complete implementation tasks while
+preserving requirements, tests and progress.
 
-Requires an initialized Spec Kit project with an agent integration, standard
-scripts, and existing `tasks.md`, `spec.md`, and `plan.md`. Spec Kit **1.2.1** is
-the tested baseline; the manifest accepts `>=1.2.1` with no upper version bound.
-Newer versions are permitted, but have not all been tested. Compatibility depends
-on extension command registration, the `after_tasks` hook, prerequisite scripts
-and the standard feature documents.
+The agent reads your spec, plan, tasks and relevant code, then merges work that
+belongs together. For example, a service change, its facade, callers and tests
+can become one task. Keeping them separate requires concrete evidence.
 
-## Install and migrate
+## Install
 
-From the target project's root, substitute your clone's absolute path:
+Requires **Spec Kit 1.2.1+**, an initialized project and an agent integration.
+Clone this repository, then run from your project's root:
 
 ```bash
-# Only if the old preset is installed: remove it before adding the extension.
-specify preset remove task-consolidation
 specify extension add --dev /absolute/path/to/spec-kit-extension-task-consolidation
 ```
 
-Confirm the generated tasks command no longer contains the preset wrapper,
-including through other overrides. Keep exactly one consolidation hook.
-
-**Hook order matters:** in `.specify/extensions.yml`, place the existing
-`task-consolidation` entry first under `hooks.after_tasks`, before publish/commit
-hooks. Keep it enabled, with `optional: false` and no non-empty `condition`.
-Spec Kit 1.2.1's tasks template follows YAML order, skips non-empty conditions,
-and does not sort by `priority`. Reinstallation can append the hook at the end:
-recheck order after installation, reinstall, or other hook changes.
+In `.specify/extensions.yml`, place its `after_tasks` hook before commit or publish
+hooks. Keep it enabled, with `optional: false` and no condition. Check the order
+again after reinstalling; Spec Kit 1.2.1 uses YAML order rather than `priority`.
 
 ## Use
 
-Run the official `speckit.tasks` as usual: it generates the draft, invokes and
-waits for consolidation, handles remaining hooks, then reports completion.
-The extension does not wrap, replace, or recursively invoke task generation.
+Run `/speckit.tasks` as usual. Consolidation runs automatically after task generation.
 
-For an existing or already-started list, invoke
-`/speckit.task-consolidation.consolidate`, or
-`$speckit-task-consolidation-consolidate` in Codex skills mode.
-Consolidation updates `tasks.md` directly and saves review findings separately in
-`consolidation-review.md`. Only these two files may change. Required work, test
-coverage and ordering, architectural ownership, explicit repository/story rules,
-completed status and partial progress are preserved. Referenced IDs are retained
-or explicitly mapped; dependencies and parallel markers are updated.
+To consolidate an existing task list, run in your coding agent:
 
-Retained boundaries require evidence that the combined implementation and validation
-are impractical, an explicit rule requires separate execution or delivery, or a
-merge would corrupt progress. A new algorithm or lifecycle alone is insufficient.
-Before rejecting the strongest candidate, the agent drafts its combined outcome
-and validation. After merging, it reviews the resulting list again.
-
-Every invocation prints `TASK CONSOLIDATION STARTED`, then MUST print a fixed
-`TASK CONSOLIDATION RESULT` block in the final console/chat response, including
-no-merge, blocked and failed runs. Saving a review file or announcing a hook is
-not a substitute. The report always includes these labels in this order:
-
-```markdown
-**TASK CONSOLIDATION RESULT**
-- **Status:** COMPLETED
-- **Tasks:** Reviewed 8 → 7 tasks.
-- **Merged:** T003 + T004 → T003: service operation and its delegating facade.
-- **Retained / rejected:** T002 is completed; absorbing unfinished T003 would corrupt progress.
-- **Evidence:** src/facade.py: Facade.execute only delegates; no separate behavior to implement.
-- **Files:** /project/specs/001-feature/tasks.md: updated; /project/specs/001-feature/consolidation-review.md: saved
-- **Checks:** requirement ownership, dependencies, references, IDs, progress, whitespace and saved-file readback; application tests not run.
-- **Limitations:** None identified
+```text
+/speckit.task-consolidation.consolidate
 ```
 
-This is an illustrative report, not evidence of a real run. Status is `COMPLETED`,
-`NO MERGES`, `BLOCKED` or `FAILED`; unavailable counts and paths are `unknown`.
-Successful reviews require reading back both final files to verify counts and results.
-Failures identify partial writes. If nothing merges, the report shows the strongest
-combined outcome considered and the specific evidence blocking it. Reference
-repairs alone are not consolidation.
+In Codex skills mode, use `$speckit-task-consolidation-consolidate`.
+The feature must already have `spec.md`, `plan.md` and `tasks.md`.
 
-The review records current findings and preserves still-needed ID mappings.
-Consolidation does not implement tasks or run application tests. Required writes
-finish before returning to downstream hooks. The hook requires the parent to include
-the populated result block unchanged in its final response after remaining hooks.
+## Results
 
-## Reinstall or remove
+- **`tasks.md`** — merged tasks with requirements, tests, dependencies and progress preserved.
+- **`consolidation-review.md`** — merge reasons, code evidence and any ID mappings.
+- **Console report** — `TASK CONSOLIDATION STARTED`, followed by a mandatory
+  `TASK CONSOLIDATION RESULT` showing before/after counts, merges, retained boundaries,
+  evidence, saved files, checks and limitations. No-merge and failed runs report too.
 
-Source edits do not update installed commands automatically. Reinstall with:
+Only the two Markdown files change. The extension does not implement tasks or run
+application tests. It has no target task count; if nothing merges, it must explain
+why the strongest candidate stayed separate. See the [command](commands/consolidate.md)
+for the full review rules and report template.
+
+## Update or remove
+
+After updating your clone, reinstall from your project's root:
 
 ```bash
 specify extension add --dev /absolute/path/to/spec-kit-extension-task-consolidation --force
 ```
 
-Recheck hook order afterward. To uninstall:
+To uninstall:
 
 ```bash
 specify extension remove task-consolidation
 ```
 
-## Validation and limits
+Migrating from the old preset? Remove it with `specify preset remove task-consolidation`
+and remove its task-generation wrapper before installing. Keep one consolidation hook.
 
-Spec Kit 1.2.1 installation, reinstall, removal and migration checks passed.
-Earlier same-session trials covered execution, ordering, preservation and stability;
-they predate the v0.5.0 merge-first instructions. These instructions have not yet
-been evaluated in an independent consolidation run.
-Independent agent sessions and PowerShell/Python execution remain untested.
-Registration success alone does not prove behavioral effectiveness.
+## Compatibility
 
-Execution is agent-driven. Mandatory hooks require actual invocation and waiting;
-malformed hook YAML currently warns and allows the parent to continue. Correct
-hook ordering must be established before running tasks.
+Spec Kit 1.2.1 is the tested installation baseline; newer versions are allowed without
+an upper bound. The current consolidation instructions still need an independent
+execution trial. PowerShell and Python execution remain untested.
