@@ -8,7 +8,10 @@ length or file counts; do not force a target task count.
 
 Requires an initialized Spec Kit project with an agent integration, standard
 scripts, and existing `tasks.md`, `spec.md`, and `plan.md`. Spec Kit **1.2.1** is
-the tested baseline; the manifest accepts `>=1.2.1,<1.3.0`.
+the tested baseline; the manifest accepts `>=1.2.1` with no upper version bound.
+Newer versions are permitted, but have not all been tested. Compatibility depends
+on extension command registration, the `after_tasks` hook, prerequisite scripts
+and the standard feature documents.
 
 ## Install and migrate
 
